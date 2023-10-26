@@ -1,6 +1,4 @@
-import cm.CarParkKind;
-import cm.Period;
-import cm.Rate;
+package cm;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -20,16 +18,9 @@ public class Main {
 
         Rate rate = new Rate(CarParkKind.SOME_KIND, BigDecimal.valueOf(5), BigDecimal.valueOf(2), normalPeriods, reducedPeriods);
 
-        // Testing duration
         System.out.println("Duration of period 1: " + period1.duration());
-
-        // Testing period overlaps
         System.out.println("cm.Period 1 overlaps period 2: " + period1.overlaps(period2));
-
-        // Testing calculate method
         System.out.println("Charge for period 2: " + rate.calculate(period2));
-
-        // Testing calculate method
         System.out.println("Charge for period 3: " + rate.calculate(period3));
     }
 }
