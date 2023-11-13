@@ -2,95 +2,97 @@ package cm;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Rate {
     private CarParkKind kind;
-    private BigDecimal normalRate;
-    private BigDecimal reducedRate;
-    private ArrayList<Period> normalPeriods;
-    private ArrayList<Period> reducedPeriods;
+    private BigDecimal hourlyNormalRate;
+    private BigDecimal hourlyReducedRate;
+    private ArrayList<Period> reduced = new ArrayList<>();
+    private ArrayList<Period> normal = new ArrayList<>();
 
     public Rate(CarParkKind kind, BigDecimal normalRate, BigDecimal reducedRate, ArrayList<Period> normalPeriods, ArrayList<Period> reducedPeriods) {
+        if (reducedPeriods == null || normalPeriods == null) {
+            throw new IllegalArgumentException("periods cannot be null");
+        }
+        if (normalRate == null || reducedRate == null) {
+            throw new IllegalArgumentException("The rates cannot be null");
+        }
         if (normalRate.compareTo(BigDecimal.ZERO) < 0 || reducedRate.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("Rates cannot be negative.");
+            throw new IllegalArgumentException("A rate cannot be negative");
         }
-        if (normalRate.compareTo(reducedRate) < 0) {
-            throw new IllegalArgumentException("Normal rate should be greater or equal to reduced rate.");
+        if (normalRate.compareTo(reducedRate) <= 0) {
+            throw new IllegalArgumentException("The normal rate cannot be less or equal to the reduced rate");
         }
-        if (!isValidPeriods(normalPeriods) || !isValidPeriods(reducedPeriods)) {
-            throw new IllegalArgumentException("Invalid periods.");
+        if (!isValidPeriods(reducedPeriods) || !isValidPeriods(normalPeriods)) {
+            throw new IllegalArgumentException("The periods are not valid individually");
         }
-
+        if (!isValidPeriods(reducedPeriods, normalPeriods)) {
+            throw new IllegalArgumentException("The periods overlaps");
+        }
         this.kind = kind;
-        this.normalRate = normalRate;
-        this.reducedRate = reducedRate;
-        this.normalPeriods = normalPeriods;
-        this.reducedPeriods = reducedPeriods;
+        this.hourlyNormalRate = normalRate;
+        this.hourlyReducedRate = reducedRate;
+        this.reduced = reducedPeriods;
+        this.normal = normalPeriods;
     }
 
-    public BigDecimal calculate(Period periodStay) { //(5, 13)
-        int duration = periodStay.duration();
-        BigDecimal charge = BigDecimal.ZERO;
+    /**
+     * Checks if two collections of periods are valid together
+     * @param periods1
+     * @param periods2
+     * @return true if the two collections of periods are valid together
+     */
+    private boolean isValidPeriods(ArrayList<Period> periods1, ArrayList<Period> periods2) {
+        Boolean isValid = true;
+        int i = 0;
+        while (i < periods1.size() && isValid) {
+            isValid = isValidPeriod(periods1.get(i), periods2);
+            i++;
+        }
+        return isValid;
+    }
 
-        for (Period p : normalPeriods) {
-            if (periodStay.overlaps(p)) {
-                int overlapDuration = periodStay.calculateOverlap(p);
-                charge = charge.add(BigDecimal.valueOf(overlapDuration).multiply(normalRate));
+    /**
+     * checks if a collection of periods is valid
+     * @param list the collection of periods to check
+     * @return true if the periods do not overlap
+     */
+    private Boolean isValidPeriods(ArrayList<Period> list) {
+        Boolean isValid = true;
+        if (list.size() >= 2) {
+            Period secondPeriod;
+            int i = 0;
+            int lastIndex = list.size()-1;
+            while (i < lastIndex && isValid) {
+                isValid = isValidPeriod(list.get(i), ((List<Period>)list).subList(i + 1, lastIndex+1));
+                i++;
             }
         }
+        return isValid;
+    }
 
-        for (Period p : reducedPeriods) {
-            if (periodStay.overlaps(p)) {
-                int overlapDuration = periodStay.calculateOverlap(p);
-                charge = charge.add(BigDecimal.valueOf(overlapDuration).multiply(reducedRate));
-            }
+    /**
+     * checks if a period is a valid addition to a collection of periods
+     * @param period the Period addition
+     * @param list the collection of periods to check
+     * @return true if the period does not overlap in the collecton of periods
+     */
+    private Boolean isValidPeriod(Period period, List<Period> list) {
+        Boolean isValid = true;
+        int i = 0;
+        while (i < list.size() && isValid) {
+            isValid = !period.overlaps(list.get(i));
+            i++;
         }
-
-        return charge;
+        return isValid;
+    }
+    public BigDecimal calculate(Period periodStay) {
+        int normalRateHours = periodStay.occurences(normal);
+        int reducedRateHours = periodStay.occurences(reduced);
+        if (this.kind==CarParkKind.VISITOR) return BigDecimal.valueOf(0);
+        return (this.hourlyNormalRate.multiply(BigDecimal.valueOf(normalRateHours))).add(
+                this.hourlyReducedRate.multiply(BigDecimal.valueOf(reducedRateHours)));
     }
 
-    private boolean isValidPeriods(ArrayList<Period> periods) {
-        for (int i = 0; i < periods.size(); i++) {
-            Period p1 = periods.get(i);
-            for (int j = i + 1; j < periods.size(); j++) {
-                Period p2 = periods.get(j);
-                if (p1.overlaps(p2)) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-}
-
-class Period {
-    private int startHour;
-    private int endHour;
-
-    public Period(int startHour, int endHour) {
-        if (startHour < 0 || startHour >= 24 || endHour < 0 || endHour > 24 || startHour >= endHour) {
-            System.out.println("Invalid start or end hour.");
-        }
-        this.startHour = startHour;
-        this.endHour = endHour;
-    }
-
-    public boolean overlaps(Period period) {
-        return this.startHour < period.endHour && this.endHour > period.startHour;
-    }
-
-    public int duration() {
-        return endHour - startHour;
-    }
-
-    public int calculateOverlap(Period period) {
-        int overlapStart = Math.max(this.startHour, period.startHour);
-        int overlapEnd = Math.min(this.endHour, period.endHour);
-        return overlapEnd - overlapStart;
-    }
-}
-
-enum CarParkKind {
-    SOME_KIND
-    // define car park kinds here
 }

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-public class MingKitChoyTestTask1 {
+public class MingKitChoyTestTask2 {
     private Rate rate;
     private ArrayList<Period> normalPeriods;
     private ArrayList<Period> reducedPeriods;
@@ -33,7 +33,7 @@ public class MingKitChoyTestTask1 {
         overlappingReducedPeriods.add(new Period(7, 10));
         overlappingReducedPeriods.add(new Period(9, 12));
 
-        rate = new Rate(CarParkKind.SOME_KIND, new BigDecimal("5"), new BigDecimal("2"), normalPeriods, reducedPeriods);
+        rate = new Rate(CarParkKind.VISITOR, new BigDecimal("5"), new BigDecimal("2"), normalPeriods, reducedPeriods);
     }
 
     // Valid Input Test Cases (4)
@@ -80,7 +80,7 @@ public class MingKitChoyTestTask1 {
 
     @Test
     public void test_008() {
-        assertThrows(IllegalArgumentException.class, () -> new Rate(CarParkKind.SOME_KIND, new BigDecimal("-5"), new BigDecimal("2"), normalPeriods, reducedPeriods));
+        assertThrows(IllegalArgumentException.class, () -> new Rate(CarParkKind.VISITOR, new BigDecimal("-5"), new BigDecimal("2"), normalPeriods, reducedPeriods));
     }
 
     // Valid Output Test Cases (4)
@@ -115,21 +115,22 @@ public class MingKitChoyTestTask1 {
     // Invalid Output Test Cases (4)
     @Test
     public void test_013() {
-        assertThrows(IllegalArgumentException.class, () -> new Rate(CarParkKind.SOME_KIND, new BigDecimal("5"), new BigDecimal("2"), normalPeriods, overlappingReducedPeriods));
+        assertThrows(IllegalArgumentException.class, () -> new Rate(CarParkKind.VISITOR, new BigDecimal("5"), new BigDecimal("2"), normalPeriods, overlappingReducedPeriods));
     }
 
     @Test
     public void test_014() {
-        assertThrows(IllegalArgumentException.class, () -> new Rate(CarParkKind.SOME_KIND, new BigDecimal("5"), new BigDecimal("2"), overlappingNormalPeriods, reducedPeriods));
+        assertThrows(IllegalArgumentException.class, () -> new Rate(CarParkKind.VISITOR, new BigDecimal("5"), new BigDecimal("2"), overlappingNormalPeriods, reducedPeriods));
     }
 
     @Test
     public void test_015() {
-        assertThrows(IllegalArgumentException.class, () -> new Rate(CarParkKind.SOME_KIND, new BigDecimal("5"), new BigDecimal("2"), overlappingNormalPeriods, overlappingReducedPeriods));
+        assertThrows(IllegalArgumentException.class, () -> new Rate(CarParkKind.VISITOR, new BigDecimal("5"), new BigDecimal("2"), overlappingNormalPeriods, overlappingReducedPeriods));
     }
 
     @Test
     public void test_016() {
-        assertThrows(IllegalArgumentException.class, () -> new Rate(CarParkKind.SOME_KIND, new BigDecimal("-5"), new BigDecimal("-2"), normalPeriods, reducedPeriods));
+        assertThrows(IllegalArgumentException.class, () -> new Rate(CarParkKind.VISITOR, new BigDecimal("-5"), new BigDecimal("-2"), normalPeriods, reducedPeriods));
     }
 }
+
