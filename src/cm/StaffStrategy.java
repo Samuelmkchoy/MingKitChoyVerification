@@ -2,9 +2,10 @@ package cm;
 
 import java.math.BigDecimal;
 
-public class StaffStrategy  implements PayStrategy{
+public class StaffStrategy implements PayStrategy {
+    private static final BigDecimal MAX_PAYABLE = BigDecimal.valueOf(10);
+    @Override
     public BigDecimal applyRateReduction(BigDecimal totalCost) {
-        totalCost=BigDecimal.valueOf(10);
-        return totalCost;
+        return totalCost.min(MAX_PAYABLE);
     }
 }
