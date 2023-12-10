@@ -10,6 +10,9 @@ public class Rate {
     private BigDecimal hourlyReducedRate;
     private ArrayList<Period> reduced = new ArrayList<>();
     private ArrayList<Period> normal = new ArrayList<>();
+    private PayStrategy payStrategy;
+
+
 
     public Rate(CarParkKind kind, BigDecimal normalRate, BigDecimal reducedRate, ArrayList<Period> normalPeriods, ArrayList<Period> reducedPeriods) {
         if (kind == null){
@@ -34,10 +37,28 @@ public class Rate {
             throw new IllegalArgumentException("The periods overlaps");
         }
         this.kind = kind;
+        // Initialize the PayStrategy based on CarParkKind
+        this.payStrategy = createPayStrategy(kind);
         this.hourlyNormalRate = normalRate;
         this.hourlyReducedRate = reducedRate;
         this.reduced = reducedPeriods;
         this.normal = normalPeriods;
+    }
+
+    private PayStrategy createPayStrategy(CarParkKind kind) {
+        switch (kind) {
+            case VISITOR:
+                return new VisitorStrategy();
+            case MANAGEMENT:
+                return new ManagementStrategy();
+            case STUDENT:
+                return new StudentStrategy();
+            case STAFF:
+                return new StaffStrategy();
+            default:
+                //also check if CarParkKind is null
+                throw new IllegalArgumentException("Unsupported CarParkKind");
+        }
     }
 
     /**
@@ -90,11 +111,14 @@ public class Rate {
         }
         return isValid;
     }
+
     public BigDecimal calculate(Period periodStay) {
         int normalRateHours = periodStay.occurences(normal);
         int reducedRateHours = periodStay.occurences(reduced);
-        return (this.hourlyNormalRate.multiply(BigDecimal.valueOf(normalRateHours))).add(
-                this.hourlyReducedRate.multiply(BigDecimal.valueOf(reducedRateHours)));
-    }
+        BigDecimal totalCost = this.hourlyNormalRate.multiply(BigDecimal.valueOf(normalRateHours))
+                .add(this.hourlyReducedRate.multiply(BigDecimal.valueOf(reducedRateHours)));
 
+        // Apply reduction rates based on CarParkKind using the PayStrategy
+        return payStrategy.applyRateReduction(totalCost);
+    }
 }
