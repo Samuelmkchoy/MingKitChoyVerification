@@ -43,7 +43,7 @@ public class MingKitChoyTestTask3 {
         reducedPeriods.add(new Period(0, 7));
 
         Rate rate1 = new Rate(kind, normalRate, reducedRate, normalPeriods, reducedPeriods);
-        Period periodStay = new Period(0, 1);
+        Period periodStay = new Period(0, 24);
         BigDecimal charge = rate1.calculate(periodStay);
         //MANAGEMENT: minimum payable is 5.00
         assertEquals(new BigDecimal("5"), charge);
