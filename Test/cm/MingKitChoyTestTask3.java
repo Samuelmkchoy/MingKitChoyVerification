@@ -48,4 +48,24 @@ public class MingKitChoyTestTask3 {
         //MANAGEMENT: minimum payable is 5.00
         assertEquals(new BigDecimal("5"), charge);
     }
+    @Test
+    public void StudentCharge(){
+        CarParkKind kind = CarParkKind.STUDENT;
+        BigDecimal normalRate = BigDecimal.valueOf(5);
+        BigDecimal reducedRate = BigDecimal.valueOf(2);
+        ArrayList<Period> normalPeriods = new ArrayList<>();
+        ArrayList<Period> reducedPeriods = new ArrayList<>();
+
+        normalPeriods.add(new Period(7, 24));
+        reducedPeriods.add(new Period(0, 7));
+
+        Rate rate1 = new Rate(kind, normalRate, reducedRate, normalPeriods, reducedPeriods);
+        Period periodStay = new Period(0, 5);
+        BigDecimal charge = rate1.calculate(periodStay);
+        //STUDENT: 33% reduction on any amount above 5.50
+        //This should be 10 - 5.5 =4.5
+        // 4.5 * 0.33 = 1.485
+        // 5.5 + 1.485 = 6.985
+        assertEquals(new BigDecimal("6.985"), charge);
+    }
 }
