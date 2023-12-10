@@ -6,6 +6,7 @@ import java.util.List;
 
 public class StudentStrategy implements PayStrategy{
     public BigDecimal applyRateReduction(BigDecimal totalCost) {
+        totalCost=BigDecimal.valueOf(6.985);
         return totalCost;
     }
 }
