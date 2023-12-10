@@ -68,4 +68,23 @@ public class MingKitChoyTestTask3 {
         // 5.5 + 1.485 = 6.985
         assertEquals(new BigDecimal("6.985"), charge);
     }
+    @Test
+    public void VisitorCharge(){
+        CarParkKind kind = CarParkKind.VISITOR;
+        BigDecimal normalRate = BigDecimal.valueOf(5);
+        BigDecimal reducedRate = BigDecimal.valueOf(2);
+        ArrayList<Period> normalPeriods = new ArrayList<>();
+        ArrayList<Period> reducedPeriods = new ArrayList<>();
+
+        normalPeriods.add(new Period(7, 24));
+        reducedPeriods.add(new Period(0, 7));
+
+        Rate rate1 = new Rate(kind, normalRate, reducedRate, normalPeriods, reducedPeriods);
+        Period periodStay = new Period(14, 24);
+        BigDecimal charge = rate1.calculate(periodStay);
+        // According to the specified logic, the first 10.00 is free,
+        // and there is a 50% reduction on any amount above that.
+        // (50 - 10) * 0.5 = 20
+        assertEquals(new BigDecimal("20"), charge);
+    }
 }
