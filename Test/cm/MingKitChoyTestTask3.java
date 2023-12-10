@@ -85,6 +85,6 @@ public class MingKitChoyTestTask3 {
         // According to the specified logic, the first 10.00 is free,
         // and there is a 50% reduction on any amount above that.
         // (50 - 10) * 0.5 = 20
-        assertEquals(new BigDecimal("20"), charge);
+        assertEquals(new BigDecimal("20.0"), charge);
     }
 }
