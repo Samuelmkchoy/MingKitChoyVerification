@@ -257,6 +257,24 @@ public class MingKitChoyTestTask3 {
         assertEquals(new BigDecimal("6.985"), charge);
     }
     @Test
+    public void StudentCharge2(){
+        CarParkKind kind = CarParkKind.STUDENT;
+        BigDecimal normalRate = BigDecimal.valueOf(5);
+        BigDecimal reducedRate = BigDecimal.valueOf(2);
+        ArrayList<Period> normalPeriods = new ArrayList<>();
+        ArrayList<Period> reducedPeriods = new ArrayList<>();
+
+        normalPeriods.add(new Period(7, 24));
+        reducedPeriods.add(new Period(0, 7));
+
+        Rate rate1 = new Rate(kind, normalRate, reducedRate, normalPeriods, reducedPeriods);
+        Period periodStay = new Period(0, 1);
+        BigDecimal charge = rate1.calculate(periodStay);
+        //STUDENT: 33% reduction on any amount above 5.50
+        // less than 5. it won't change.
+        assertEquals(new BigDecimal("2"), charge);
+    }
+    @Test
     public void VisitorCharge(){
         CarParkKind kind = CarParkKind.VISITOR;
         BigDecimal normalRate = BigDecimal.valueOf(5);
@@ -274,5 +292,24 @@ public class MingKitChoyTestTask3 {
         // and there is a 50% reduction on any amount above that.
         // (50 - 10) * 0.5 = 20
         assertEquals(new BigDecimal("20.0"), charge);
+    }
+    @Test
+    public void VisitorNoCharge(){
+        CarParkKind kind = CarParkKind.VISITOR;
+        BigDecimal normalRate = BigDecimal.valueOf(5);
+        BigDecimal reducedRate = BigDecimal.valueOf(2);
+        ArrayList<Period> normalPeriods = new ArrayList<>();
+        ArrayList<Period> reducedPeriods = new ArrayList<>();
+
+        normalPeriods.add(new Period(7, 24));
+        reducedPeriods.add(new Period(0, 7));
+
+        Rate rate1 = new Rate(kind, normalRate, reducedRate, normalPeriods, reducedPeriods);
+        Period periodStay = new Period(14, 15);
+        BigDecimal charge = rate1.calculate(periodStay);
+        // According to the specified logic, the first 10.00 is free,
+        // and there is a 50% reduction on any amount above that.
+        // (50 - 10) * 0.5 = 20
+        assertEquals(new BigDecimal("0"), charge);
     }
 }
