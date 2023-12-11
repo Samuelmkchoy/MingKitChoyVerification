@@ -56,8 +56,8 @@ public class Rate {
             case STAFF:
                 return new StaffStrategy();
             default:
-                //also check if CarParkKind is null
-                throw new IllegalArgumentException("Unsupported CarParkKind");
+                //default set for Visitor for now.
+                return new VisitorStrategy();
         }
     }
 

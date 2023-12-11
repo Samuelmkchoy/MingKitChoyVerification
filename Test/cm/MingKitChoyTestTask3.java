@@ -312,4 +312,35 @@ public class MingKitChoyTestTask3 {
         // (50 - 10) * 0.5 = 20
         assertEquals(new BigDecimal("0"), charge);
     }
+    @Test
+    public void KindIsNull(){
+        BigDecimal normalRate = BigDecimal.valueOf(5);
+        BigDecimal reducedRate = BigDecimal.valueOf(2);
+        ArrayList<Period> normalPeriods = new ArrayList<>();
+        ArrayList<Period> reducedPeriods = new ArrayList<>();
+
+        normalPeriods.add(new Period(7, 24));
+        reducedPeriods.add(new Period(0, 7));
+
+        assertThrows(IllegalArgumentException.class, () ->
+                new Rate(null, normalRate, reducedRate, normalPeriods, reducedPeriods)
+        );
+    }
+    @Test
+    public void invalidPeriodsTest() {
+        CarParkKind kind = CarParkKind.VISITOR;
+        BigDecimal normalRate = BigDecimal.valueOf(5);
+        BigDecimal reducedRate = BigDecimal.valueOf(2);
+
+        ArrayList<Period> normalPeriods = new ArrayList<>();
+        normalPeriods.add(new Period(7, 12));
+        normalPeriods.add(new Period(10, 15));  // Overlaps with the previous period
+
+        ArrayList<Period> reducedPeriods = new ArrayList<>();
+        reducedPeriods.add(new Period(0, 7));
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            new Rate(kind, normalRate, reducedRate, normalPeriods, reducedPeriods);
+        });
+    }
 }
